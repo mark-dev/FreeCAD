@@ -308,6 +308,14 @@ class _Roof(ArchComponent.Component):
                             "Flip",
                             "Roof",
                             QT_TRANSLATE_NOOP("App::Property", "Specifies if the direction of the roof should be flipped"))
+
+        if not "Subvolume" in pl:
+            obj.addProperty("App::PropertyLink","Subvolume","Roof",QT_TRANSLATE_NOOP("App::Property","An optional object that defines a volume to be subtracted from walls. If field is set - it has a priority over auto-generated subvolume"))
+
+        if not "SubvolumeGenerateStrategy" in pl:
+            obj.addProperty("App::PropertyEnumeration","SubvolumeGenerateStrategy","Roof",QT_TRANSLATE_NOOP("App::Property","The subvolume generate strategy"))
+            obj.SubvolumeGenerateStrategy = ["Default","ExtrudeShapeHorizontally"]
+
         self.Type = "Roof"
 
     def onDocumentRestored(self, obj):
@@ -825,21 +833,41 @@ class _Roof(ArchComponent.Component):
 
     def getSubVolume(self, obj):
         '''returns a volume to be subtracted'''
-        if obj.Base:
-            if hasattr(obj.Base, "Shape"):
-                if obj.Base.Shape.Solids:
-                    return obj.Shape
-                else :
-                    if hasattr(self, "sub"):
-                        if self.sub:
-                            return self.sub
-                        else :
-                            self.execute(obj)
-                            return self.sub
-                    else :
-                        self.execute(obj)
-                        return self.sub
-        return None
+        FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume Called!!!"))
+        FreeCAD.Console.PrintMessage(translate("Arch", "!!! BURUNDUK PRONIK V FREECAD !!!"))
+
+        custom_subvolume = getattr(self, 'Subvolume', None)
+        if custom_subvolume:
+            if hasattr(custom_subvolume, 'Shape'):
+                sh = custom_subvolume.Shape.copy()
+                sh_placement = (custom_subvolume, "Placement", None)
+                if sh_placement:
+                    sh.Placement = obj.Placement.multiply(custom_subvolume.Placement)
+                return sh
+
+        if not obj.Base:
+            return None
+
+        if not hasattr(obj.Base, "Shape"):
+            return None
+
+        if obj.Base.Shape.Solids:
+            FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume obj.Base.Shape.Solids -> return obj.Shape"))
+            subvolume_strategy = getattr(self, 'SubvolumeGenerateStrategy', None)
+
+            FreeCAD.Console.PrintMessage(translate("Arch", "SubVolume strategy: {}".format(subvolume_strategy)))
+            FreeCAD.Console.PrintMessage(translate("Arch", "TODO: respect strategy"))
+
+            return obj.Shape
+
+        sub_field = getattr(self, 'sub', None)
+        if sub_field:
+            FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume sub_field exists -> return sub field"))
+            return sub_field
+
+        FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume sub_field absent -> self.execute first"))
+        self.execute(obj)
+        return self.sub
 
     def computeAreas(self, obj):
         '''computes border and ridge roof edges length'''
