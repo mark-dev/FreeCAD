@@ -837,6 +837,7 @@ class _Roof(ArchComponent.Component):
         FreeCAD.Console.PrintMessage(translate("Arch", "!!! BURUNDUK PRONIK V FREECAD !!!"))
 
         custom_subvolume = getattr(self, 'Subvolume', None)
+        FreeCAD.Console.PrintMessage(translate("Arch", "Subvolume result is:{}".format(custom_subvolume)))
         if custom_subvolume:
             if hasattr(custom_subvolume, 'Shape'):
                 sh = custom_subvolume.Shape.copy()
@@ -844,6 +845,8 @@ class _Roof(ArchComponent.Component):
                 if sh_placement:
                     sh.Placement = obj.Placement.multiply(custom_subvolume.Placement)
                 return sh
+            else:
+                FreeCAD.Console.PrintMessage(translate("Arch", "Subvolume no shape"))
 
         if not obj.Base:
             return None
