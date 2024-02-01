@@ -835,11 +835,11 @@ class _Roof(ArchComponent.Component):
         '''returns a volume to be subtracted'''
         FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume Called!!!"))
         FreeCAD.Console.PrintMessage(translate("Arch", "!!! BURUNDUK PRONIK V FREECAD !!!"))
-        has_property = hasattr(self, 'Subvolume')
+        has_property = hasattr(obj, 'Subvolume')
         FreeCAD.Console.PrintMessage(translate("Arch", "Has property: {}".format(has_property)))
-        FreeCAD.Console.PrintMessage(translate("Arch", "{}".format(self.__dict__)))
+        FreeCAD.Console.PrintMessage(translate("Arch", "{}".format(obj.__dict__)))
 
-        custom_subvolume = getattr(self, 'Subvolume', None)
+        custom_subvolume = getattr(obj, 'Subvolume', None)
         FreeCAD.Console.PrintMessage(translate("Arch", "Subvolume result is:{}".format(custom_subvolume)))
         if custom_subvolume:
             if hasattr(custom_subvolume, 'Shape'):
