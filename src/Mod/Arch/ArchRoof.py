@@ -857,22 +857,22 @@ class _Roof(ArchComponent.Component):
         if not hasattr(obj.Base, "Shape"):
             return None
 
-        if obj.Base.Shape.Solids:
-            FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume obj.Base.Shape.Solids -> return obj.Shape"))
+        base_solids = obj.Base.Shape.Solids
+        if base_solids:
             subvolume_strategy = getattr(self, 'SubvolumeGenerateStrategy', None)
-
             FreeCAD.Console.PrintMessage(translate("Arch", "SubVolume strategy: {}".format(subvolume_strategy)))
-            FreeCAD.Console.PrintMessage(translate("Arch", "TODO: respect strategy"))
+            if subvolume_strategy == 'ExtrudeShapeHorizontally':
+                FreeCAD.Console.PrintMessage(translate("Arch", "Extrude -> makeCompound.. -> BURUNDUK"))
+                return Part.makeCompound([sol.Shells[0].extrude(Vector(0, 0, 1000000.0)) for sol in base_solids])
 
+            FreeCAD.Console.PrintMessage(translate("Arch", "Return original shape as-is"))
             return obj.Shape
 
         sub_field = getattr(self, 'sub', None)
-        if sub_field:
-            FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume sub_field exists -> return sub field"))
-            return sub_field
+        if not sub_field:
+            FreeCAD.Console.PrintMessage(translate("Arch", "self.sub is null -> call execute() first"))
+            self.execute(obj)
 
-        FreeCAD.Console.PrintMessage(translate("Arch", "getSubVolume sub_field absent -> self.execute first"))
-        self.execute(obj)
         return self.sub
 
     def computeAreas(self, obj):
