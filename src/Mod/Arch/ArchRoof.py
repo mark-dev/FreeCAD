@@ -859,7 +859,7 @@ class _Roof(ArchComponent.Component):
 
         base_solids = obj.Base.Shape.Solids
         if base_solids:
-            subvolume_strategy = getattr(self, 'SubvolumeGenerateStrategy', None)
+            subvolume_strategy = getattr(obj, 'SubvolumeGenerateStrategy', None)
             FreeCAD.Console.PrintMessage(translate("Arch", "SubVolume strategy: {}".format(subvolume_strategy)))
             if subvolume_strategy == 'ExtrudeShapeHorizontally':
                 FreeCAD.Console.PrintMessage(translate("Arch", "Extrude -> makeCompound.. -> BURUNDUK"))
